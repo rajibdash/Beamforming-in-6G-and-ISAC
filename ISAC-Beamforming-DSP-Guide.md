@@ -1,15 +1,15 @@
 # Beamforming design for 6G integrated sensing and communication
 
-**Design status:** research-to-prototype reference architecture, updated
-12 November 2026. **Evidence baseline:** all four PDFs in this repository at
-commit `de76015f1f55c016c7dc86db3979748a369812a9`.
+**Design status:** Research-to-prototype reference architecture, updated
+12 November 2026.
 
 This document connects radio selection, physical-layer processing, control
 reliability, data precoding, waveform design, sensing DSP, and closed-loop
 resource allocation. It specifies a phased implementation and evaluation
 procedure rather than claiming a finished 6G product. Source-reported results,
 engineering corrections, and new design proposals are identified separately.
-No new simulation results or hardware measurements are claimed.
+
+**NOTE**: No new simulation results or hardware measurements are claimed.
 
 ## Contents
 
@@ -32,7 +32,7 @@ No new simulation results or hardware measurements are claimed.
 16. [Standards and references](#16-standards-and-references)
 17. [Disclaimer](#17-disclaimer)
 
-## How to use this guide
+## How to use this guide?
 
 Read sections 1-3 to understand the evidence, requirements, and radio choices.
 Sections 4-9 follow the system from architecture and signal models through
