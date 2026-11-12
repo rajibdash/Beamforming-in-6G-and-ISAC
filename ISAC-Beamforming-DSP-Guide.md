@@ -93,7 +93,7 @@ true-time-delay hardware may mitigate it.
                              |                    ^
                              v                    |
 +-------------------------------------------------------------------------+
-| gNB BASEBAND + RADIO + ANTENNA ARRAY                                     |
+| gNB BASEBAND + RADIO + ANTENNA ARRAY                                    |
 |                                                                         |
 | DOWNLINK TX                                                             |
 | Control/data/reference -> coding/modulation -> grid -> digital precoder |
@@ -101,7 +101,7 @@ true-time-delay hardware may mitigate it.
 |                                                                         |   |
 | UPLINK / SENSING RX                                                     |   |
 | Antenna -> analog combining -> RF/ADC -> DSP                            |   |
-|    -> communication decoding OR echo processing -> measurements        |   |
+|    -> communication decoding OR echo processing -> measurements         |   |
 +----------------------------^--------------------------------------------+   |
                              |                                                |
                 UE uplink ---+                    Downlink waveform ----------+
@@ -188,10 +188,10 @@ signal necessarily provides useful sensing performance.
 | Channel-specific processing                                           |
 | PDSCH: transport block -> CRC -> LDPC -> rate matching -> scrambling  |
 |        -> modulation -> layer mapping                                 |
-| PDCCH: control information -> CRC -> polar coding -> rate matching   |
-|        -> scrambling -> modulation                                     |
+| PDCCH: control information -> CRC -> polar coding -> rate matching    |
+|        -> scrambling -> modulation                                    |
 | SSB: synchronization signals and PBCH, with associated reference      |
-| References: generate configured DM-RS, CSI-RS, etc.                    |
+| References: generate configured DM-RS, CSI-RS, etc.                   |
 +---------------------------------+-------------------------------------+
                                   v
 +-----------------------------------------------------------------------+
