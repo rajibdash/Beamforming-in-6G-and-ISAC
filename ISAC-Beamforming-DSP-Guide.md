@@ -782,15 +782,15 @@ Prototype orthogonal sensing bursts first.
 
 ```mermaid
 flowchart LR
-    RF["Array, isolation/protection, RF combining, ADC"]
-    CAL["Calibration and timing/frequency alignment"]
-    SEP["Leakage and interference separation"]
-    OBS["Reference-aware echo observations"]
-    EST["Delay, Doppler, angle or range-angle estimation"]
-    DET["CFAR or calibrated detector"]
-    TRK["Association, tracking, covariance"]
-    OUT["Time-stamped sensing output"]
-    REF["TX reference and beam archive"]
+    RF["Array,\nisolation/protection,\nRF combining,\nADC"]
+    CAL["Calibration\nand timing/frequency\nalignment"]
+    SEP["Leakage and\ninterference\nseparation"]
+    OBS["Reference-aware\necho\nobservations"]
+    EST["Delay,\nDoppler,\nangle or\nrange-angle\nestimation"]
+    DET["CFAR or\ncalibrated\ndetector"]
+    TRK["Association,\ntracking,\ncovariance"]
+    OUT["Time-stamped\nsensing\noutput"]
+    REF["TX reference and\nbeam archive"]
     RF --> CAL --> SEP --> OBS --> EST --> DET --> TRK --> OUT
     REF --> CAL
     REF --> OBS
@@ -959,7 +959,7 @@ flowchart LR
     TRAIN["Actor/critic\nand target-network\ntraining"]
     VAL["Held-out validation\nand constraint audit"]
     POLICY["Versioned\ninference policy"]
-    STATE["Measured state\nand uncertainty"]
+    STATE["Measured state\nand\nuncertainty"]
     CHECK["Feasibility,\nconfidence\nand deadline gate"]
     APPLY["Scheduled beam/resource\nactivation"]
     FALL["Validated baseline\nor remeasurement"]
