@@ -67,11 +67,11 @@ receive combiner can discard the spatial samples needed for angle estimation.
 These are coupled design problems, not independent beam-index selections.
 
 **Recommended starting design:** 
-    * Protect communication control data first.
-    * Use NR like CP-OFDM data or waveform and known reference sensing in scheduled opportunities.
-    * Use a single shared waveform and aperture to transmit user data while simultaneously illuminating sensing targets, rather than splitting time or frequency resources into separate radar and communication slots.
-    * Establish calibrated digital beamforming as the algorithmic benchmark.
-    * Then introduce hardware constrained hybrid beamforming, range-angle focusing, and bounded AI assistance only when justified by measurements. mmWave is useful, but not a prerequisite for ISAC.
+* Protect communication control data first.
+* Use NR like CP-OFDM data or waveform and known reference sensing in scheduled opportunities.
+* Use a single shared waveform and aperture to transmit user data while simultaneously illuminating sensing targets, rather than splitting time or frequency resources into separate radar and communication slots.
+* Establish calibrated digital beamforming as the algorithmic benchmark.
+* Then introduce hardware constrained hybrid beamforming, range-angle focusing, and bounded AI assistance only when justified by measurements. mmWave is useful, but not a prerequisite for ISAC.
 
 ### 1.2 Source register
 
