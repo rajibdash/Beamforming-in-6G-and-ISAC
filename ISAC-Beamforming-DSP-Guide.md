@@ -273,7 +273,7 @@ codes can improve identifiability while consuming waveform degrees of freedom.
 
 ```mermaid
 flowchart TB
-    APP["Service requirements:\ncommunication QoS\nand sensing\ntask"]
+    APP["Service requirements:\ncommunication\nQoS\nand sensing\ntask"]
     CTRL["MAC scheduler,\nbeam manager,\nISAC\ncontroller"]
     EST["CSI, tracks,\nuncertainty,\ninterference,\ncalibration\nstate"]
     TX["TX PHY:\ncoding, grid,\ndigital\nprecoding,\nOFDM"]
