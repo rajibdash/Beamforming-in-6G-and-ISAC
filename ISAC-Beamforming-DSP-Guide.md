@@ -274,13 +274,13 @@ codes can improve identifiability while consuming waveform degrees of freedom.
 ```mermaid
 flowchart TB
     APP["Service requirements:\ncommunication QoS\nand sensing\ntask"]
-    CTRL["MAC scheduler,\nbeam manager,\nISAC controller"]
+    CTRL["MAC scheduler,\nbeam manager,\nISAC\ncontroller"]
     EST["CSI, tracks,\nuncertainty,\ninterference,\ncalibration\nstate"]
-    TX["TX PHY:\ncoding, grid,\ndigital precoding,\nOFDM"]
-    RADIO["Radio: DAC/RF,\nRF beam network,\nTX array"]
-    UE["UE control/data\nreception and\nuplink feedback"]
+    TX["TX PHY:\ncoding, grid,\ndigital\nprecoding,\nOFDM"]
+    RADIO["Radio: DAC/RF,\nRF beam\nnetwork,\nTX array"]
+    UE["UE control/data\nreception and\nuplink\nfeedback"]
     OBJ["Targets and\npropagation\nenvironment"]
-    RX["RX array, isolation,\nanalog combining,\nRF/ADC"]
+    RX["RX array, isolation,\nanalog\ncombining,\nRF/ADC"]
     COMM["Communication\nsynchronization,\ncombining,\ndecoding"]
     SENSE["Reference-aligned\nsensing,\ndetection,\ntracking"]
     REF["TX reference archive:\nsamples or symbols,\nbeams, timing"]
