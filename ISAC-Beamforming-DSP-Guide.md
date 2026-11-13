@@ -273,17 +273,17 @@ codes can improve identifiability while consuming waveform degrees of freedom.
 
 ```mermaid
 flowchart TB
-    APP["Service requirements: communication QoS and sensing task"]
-    CTRL["MAC scheduler, beam manager, ISAC controller"]
-    EST["CSI, tracks, uncertainty, interference, calibration state"]
-    TX["TX PHY: coding, grid, digital precoding, OFDM"]
-    RADIO["Radio: DAC/RF, RF beam network, TX array"]
-    UE["UE control/data reception and uplink feedback"]
-    OBJ["Targets and propagation environment"]
-    RX["RX array, isolation, analog combining, RF/ADC"]
-    COMM["Communication synchronization, combining, decoding"]
-    SENSE["Reference-aligned sensing, detection, tracking"]
-    REF["TX reference archive: samples or symbols, beams, timing"]
+    APP["Service requirements:\ncommunication QoS\nand sensing\ntask"]
+    CTRL["MAC scheduler,\nbeam manager,\nISAC controller"]
+    EST["CSI, tracks,\nuncertainty,\ninterference,\ncalibration\nstate"]
+    TX["TX PHY:\ncoding, grid,\ndigital precoding,\nOFDM"]
+    RADIO["Radio: DAC/RF,\nRF beam network,\nTX array"]
+    UE["UE control/data\nreception and\nuplink feedback"]
+    OBJ["Targets and\npropagation\nenvironment"]
+    RX["RX array, isolation,\nanalog combining,\nRF/ADC"]
+    COMM["Communication\nsynchronization,\ncombining,\ndecoding"]
+    SENSE["Reference-aligned\nsensing,\ndetection,\ntracking"]
+    REF["TX reference archive:\nsamples or symbols,\nbeams, timing"]
     APP --> CTRL
     EST --> CTRL
     CTRL --> TX
