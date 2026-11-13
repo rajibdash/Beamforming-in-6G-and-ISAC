@@ -1913,3 +1913,51 @@ proposals. Source authors retain their rights; no paper text, original figure,
 or experimental curve is reproduced. Before publication-quality comparison,
 obtain the original versions, confirm bibliographic metadata, audit the
 equations and assumptions, and reproduce the relevant experiments.
+
+### 18.14 Expanded web-link inventory
+
+This inventory makes the research-discovery links explicit, including
+alternative manuscript locations and supporting reference pages not listed
+in section 18.13. It records provenance, not successful access to every URL.
+**Indexed** means the link appeared in web-search results; it does not mean
+the full text was read or the findings were independently verified.
+The source-specific limitations in sections 18.1, 18.2, and 18.13 still apply.
+
+#### Core research: predictive beamforming and physical-layer security
+
+| Source | All relevant publication/manuscript links collected for the source | Access and use |
+| --- | --- | --- |
+| W1: AI-driven predictive beamforming for secure vehicular ISAC | [IEEE publication record](https://ieeexplore.ieee.org/abstract/document/11717704); [IEEE full-text endpoint](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=11717704); [Huddersfield accepted-manuscript PDF](https://pure.hud.ac.uk/files/144967878/IEEE_COMMAG_Accepted_Version.pdf); [UCL manuscript PDF](https://discovery.ucl.ac.uk/10232064/1/AI-Driven_Predictive_Beamforming_for_Secure_ISAC_in_6G_Vehicular_Networks.pdf) | Indexed discovery links. Direct retrieval of the UCL PDF failed; no full-text method, author/date metadata, or numerical result from W1 is treated as verified |
+| W2: Deep learning-empowered secure predictive beamforming / ISACformer | [DOI](https://doi.org/10.1109/TWC.2025.3567799); [IEEE publication record](https://ieeexplore.ieee.org/abstract/document/11004476); [Xi'an Jiaotong University publication description](https://scholar.xjtu.edu.cn/en/publications/deep-learning-empowered-secure-predictive-beamforming-design-for-/); [DBLP bibliographic record](https://dblp.org/rec/journals/twc/ZhangQKLWXXN25); [Researchr bibliographic record](https://researchr.org/publication/ZhangQKLWXXN25) | Indexed description supports the qualitative summary. Direct retrieval of the university page failed; bibliographic mirrors are not experimental evidence |
+| W3: Radar-assisted predictive beamforming for vehicular links | [arXiv abstract and version history](https://arxiv.org/abs/2001.09306); [arXiv PDF](https://arxiv.org/pdf/2001.09306); [UCL journal-manuscript record](https://discovery.ucl.ac.uk/id/eprint/10117126/); [related UCL conference-paper record](https://discovery.ucl.ac.uk/id/eprint/10111764/) | Indexed classical predictive-tracking research. The related conference record is not an interchangeable citation for the journal paper |
+| W4: Deep-learning predictive beamforming for vehicular ISAC | [arXiv abstract and version history](https://arxiv.org/abs/2202.03811); [arXiv PDF](https://arxiv.org/pdf/2202.03811); [ar5iv HTML rendering](https://ar5iv.labs.arxiv.org/html/2202.03811) | Indexed description of historical-channel learning; alternate renderings are not independent studies |
+| W5: Sensing-assisted eavesdropper estimation | [arXiv abstract and version history](https://arxiv.org/abs/2210.08286); [arXiv PDF](https://arxiv.org/pdf/2210.08286); [Fan Liu / ISAC Lab publication list](https://sites.google.com/view/dr-fan-liu/publications) | Indexed sensing/security research. Direct arXiv retrieval failed; the publication list is a bibliographic aid, not a substitute for checking the paper's assumptions |
+
+#### Data, MLOps, and AI-risk references
+
+| Source | Collected links | Relevance and limit |
+| --- | --- | --- |
+| W6: DeepSense 6G | [Dataset-paper abstract and version history](https://arxiv.org/abs/2211.09769); [project portal surfaced in search](https://deepsense6g.net/) | Multimodal measured-data starting point. Portal availability, licensing, scenario contents, and current access requirements were not independently checked; no secrecy ground truth is implied |
+| W7: ML delivery and continuous training | [Official MLOps architecture guide](https://docs.cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning); [alternate Google Cloud URL for the guide](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) | Indexed official guidance underlying the lifecycle discussion, not a requirement to use Google Cloud |
+| W8: NIST AI RMF 1.0 | [Framework DOI](https://doi.org/10.6028/NIST.AI.100-1); [NIST publication record](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10); [NIST framework overview](https://www.nist.gov/itl/ai-risk-management-framework); [AI RMF Core](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/); [AI Resource Center](https://airc.nist.gov/); [AI RMF resources](https://airc.nist.gov/airmf-resources/); [NIST Playbook overview](https://www.nist.gov/itl/ai-risk-management-framework/nist-ai-rmf-playbook); [Playbook entry point](https://airc.nist.gov/AIRCRMFPlaybook) | Indexed official framework and supporting resources for lifecycle governance. Their inclusion does not certify the proposed radio design |
+
+#### Additional research leads surfaced, but not adopted as evidence
+
+These links are included for discovery transparency. They did **not** supply
+verified findings for the proposed architecture or establish its performance.
+Their full text, bibliographic metadata, assumptions, and relevance require
+independent review before citation in a technical comparison.
+
+| Lead | Collected links | Why kept separate |
+| --- | --- | --- |
+| Deep learning for ISAC-enabled end-to-end predictive beamforming | [Author-hosted ICC 2023 manuscript](https://people.ece.ubc.ca/vincentw/C/WW-ICC-2023.pdf) | Related echo-to-beam learning lead; not a verified secure-ISAC implementation |
+| Deep learning based predictive beamforming design | [arXiv record](https://arxiv.org/abs/2302.01035); [version-1 PDF](https://arxiv.org/pdf/2302.01035v1) | Related predictive-learning lead, not the W2 ISACformer paper |
+| Secure beamforming under communication and sensing eavesdroppers | [arXiv record](https://arxiv.org/abs/2602.12614); [version-1 HTML](https://arxiv.org/html/2602.12614v1) | Search-surfaced threat-model lead; no optimization guarantee from it was adopted |
+| Predictive beamforming via echo-beam modality separation | [arXiv PDF](https://arxiv.org/pdf/2610.09429) | Search-surfaced recent-method lead; no performance claim was adopted |
+| Distributed game-theoretic RL for sensing security | [Cryptology ePrint record](https://eprint.iacr.org/2026/1391) | Unverified search lead; not evidence that a deployed multi-agent secure beamformer exists |
+| Existing repository source S1: AI-driven dynamic resource allocation | [Publisher article](https://www.nature.com/articles/s41598-026-42247-y); [PMC full-text entry surfaced in search](https://pmc.ncbi.nlm.nih.gov/articles/PMC13087262/) | Related resource-allocation background already discussed in sections 1-17; not new independent evidence for predictive secrecy gains |
+| Deep learning-based dynamic time-division ISAC beamforming | [PMC entry surfaced in search](https://pmc.ncbi.nlm.nih.gov/articles/PMC13165857/) | Related vehicular-ISAC lead, not a substitute for the exact-topic W1 publication |
+
+Search-engine result pages, unrelated AI documents, and low-confidence
+secondary summaries are not treated as research evidence. Where several URLs
+refer to one paper, count them as **one study**, not multiple confirmations.
