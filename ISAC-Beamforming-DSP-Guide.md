@@ -31,6 +31,8 @@ engineering corrections, and new design proposals are identified separately.
 15. [Source results and reproducibility issues](#15-source-results-and-reproducibility-issues)
 16. [Standards and references](#16-standards-and-references)
 17. [Disclaimer](#17-disclaimer)
+18. [Research addendum: AI-driven predictive beamforming for secure ISAC in 6G](#18-research-addendum-ai-driven-predictive-beamforming-for-secure-isac-in-6g)
+19. [ShareTechnote ISAC research challenges relevant to beamforming](#19-sharetechnote-isac-research-challenges-relevant-to-beamforming)
 
 ## How to use this guide?
 
@@ -1913,3 +1915,56 @@ proposals. Source authors retain their rights; no paper text, original figure,
 or experimental curve is reproduced. Before publication-quality comparison,
 obtain the original versions, confirm bibliographic metadata, audit the
 equations and assumptions, and reproduce the relevant experiments.
+
+## 19. ShareTechnote ISAC research challenges relevant to beamforming
+
+**Added 13 November 2026.** This section summarizes the ISAC and beamforming
+research issues identified in ShareTechnote's [6G ISAC research overview](https://www.sharetechnote.com/html/6G/6G_Research_ISAC.html).
+It is a source-based synthesis, not a standardized design or a report of
+independently verified performance. The source page could not be retrieved
+directly in this environment; the points below are limited to the overview
+available from indexed results.
+
+### 19.1 Core integration and beamforming implications
+
+ISAC goes beyond placing separate radar and communication functions at one
+site. Depending on the integration level, the systems may share infrastructure,
+spectrum, antennas, radio resources, computing, and waveforms. The spectrum
+and time-sharing choice affects how often communication can transmit and how
+long sensing can observe; the appropriate balance depends on the service and
+the required sensing interval.
+
+| Research challenge | Why it affects beamforming | Design and evaluation implication |
+| --- | --- | --- |
+| Conflicting communication and sensing objectives | Communication beams need dependable coverage and link quality; sensing needs useful target illumination and observable echoes, sometimes including multipath | Formulate joint objectives and hard communication/sensing constraints. Evaluate link reliability and sensing quality together rather than optimizing beam SNR alone |
+| Shared antennas, arrays, and RF chains | A common aperture and radio front end must serve both data transfer and sensing; hardware resources and beam patterns may not support both goals equally | Compare common, reconfigurable, and functionally split array/radio-chain designs under the same aperture, power, and RF-chain budget |
+| Resource and waveform allocation | Some environmental information may come from ordinary communication transmissions, while other tasks may need dedicated sensing resources or waveforms | Compare communication-signal reuse with sensing-specific opportunities; account for the lost communication time or bandwidth and the sensing benefit |
+| Joint beam-pattern and waveform design | A beam pattern suitable for communication SNR is not necessarily best for sensing accuracy; waveform choices affect both tasks | Measure communication quality and sensing accuracy for each candidate jointly. Treat OTFS and other waveform alternatives as research options, not prerequisites or standardized ISAC waveforms |
+| Angle, range, and Doppler estimation | Sensing estimates must be produced alongside robust data service, increasing signal-processing and computation demands | Include estimator latency and compute budget in the beam/resource loop; report parameter error and communication service metrics together |
+| Multipath, clutter, and calibration | Reflections can supply sensing observations, but also create communication impairment and clutter; array/channel mismatch degrades spatial estimates | Calibrate array and propagation assumptions; distinguish useful paths from clutter and interference, and test under realistic multipath rather than an ideal line-of-sight-only model |
+| Crosstalk and dense deployments | Shared operation can create mutual interference, especially with many nearby links or sensing tasks | Include concurrent transmitters and sensing/communication interference in beam selection and evaluation; test dense scenarios and the applicable carrier band |
+| Joint baseband processing | The same or related baseband observations may support data decoding and inference of target presence, position, velocity, or shape | Define which samples, references, and beam state are available to each receiver task; evaluate the joint processing chain, not just transmit weights |
+| End-to-end network architecture | Integrated operation can change coordination and resource decisions across radio access and core functions | Specify which entity owns sensing requests, beam/resource decisions, measurement delivery, and policy; measure coordination delay and signaling overhead |
+| Privacy, security, and regulation | Beams and sensing schedules determine where energy is directed and what environmental observations are collected | Constrain sensing to authorized purposes and regions, minimize retained data, and include privacy/security review in deployment requirements |
+
+### 19.2 Integration levels and evaluation scope
+
+The overview describes integration as a spectrum: **coexistence** can retain
+separate sensing and communication systems on shared infrastructure, whereas
+**full integration** uses one system to perform both tasks. Beamforming
+assumptions change across that spectrum. A coexistence baseline should expose
+inter-system interference and coordination; a more integrated design should
+state which waveforms, arrays, and processing are actually shared.
+
+Useful application settings include indoor localization, activity recognition,
+drones, automated vehicles, and smart manufacturing. These are motivating
+contexts rather than evidence that one beamforming solution works across them.
+For each evaluation, state the target/task, geometry, mobility, propagation
+and clutter assumptions, array and RF-chain limits, resource-sharing policy,
+and communication and sensing metrics. Compare against separate-function and
+partially integrated baselines where applicable.
+
+This section complements Section 13's engineering mitigations. The source
+overview identifies research questions and trade-offs; the implementation
+choices and verification procedures in this guide remain proposals that need
+scenario-specific validation.
