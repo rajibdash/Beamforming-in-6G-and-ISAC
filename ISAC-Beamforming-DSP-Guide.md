@@ -1417,3 +1417,499 @@ predictions as the sole basis for safety-critical decisions. Original papers
 and figure artwork remain subject to their respective licenses and authors'
 rights; source summaries and editorial corrections do not imply author
 endorsement of this guide.
+
+## 18. Research addendum: AI-driven predictive beamforming for secure ISAC in 6G
+
+**Added 13 November 2026.** This append-only addendum leaves sections 1-17
+unchanged. It extends their architecture with a physical-layer security
+perspective, AI design choices, an agent workflow, and an MLOps lifecycle.
+It is an original engineering synthesis, not an implemented system or a
+reproduction of published experiments.
+
+**Main conclusion:** AI can help anticipate where useful and unwanted signal
+energy will go at the time a beam is actually transmitted. Combining those
+predictions with uncertainty-aware optimization can improve the trade-off
+between legitimate-user service, sensing, and modeled interception risk.
+Prediction alone does not establish secrecy: unobserved receivers, receiver
+capabilities, model error, and spatial overlap remain fundamental limitations.
+Physical-layer security supplements, rather than replaces, encryption,
+authentication, authorization, and secure key management.
+
+### 18.1 Reading map and web-evidence boundaries
+
+| Topic | Location |
+| --- | --- |
+| Web research and what it establishes | Sections 18.2 and 18.13 |
+| Threat model and secure-ISAC requirements | Section 18.3 |
+| Architecture, signal model, and optimization | Sections 18.4-18.5 |
+| AI methods and uncertainty | Section 18.6 |
+| Design challenges and mitigations | Section 18.7 |
+| Runtime and engineering agent workflows | Sections 18.8-18.9 |
+| MLOps, evaluation, and implementation gates | Sections 18.10-18.12 |
+
+Web discovery used indexed research and official-resource results. Direct
+publisher/arXiv/repository full-text retrieval was unavailable for several
+sources in this environment; this is **not a full-text systematic review**.
+The register provides source links, available bibliographic identifiers, and
+specific limits on their use. Conflicting search-generated author/date
+metadata for W1 was not adopted. No unverified numerical improvement, runtime,
+deployment, or theorem is attributed to these sources.
+
+In the following text, **literature finding** means a qualitative contribution
+described by the indexed source; **proposal** means a design recommendation
+in this addendum. Neither means independently reproduced performance.
+The prior sections' statements about standards verification still apply:
+this addition does not certify November 2026 standards status.
+
+### 18.2 What the research establishes, and what remains open
+
+| Evidence | Literature finding | Consequence for the design | Evidence limit |
+| --- | --- | --- | --- |
+| Radar-assisted prediction, W3 | Sensing-assisted state tracking and prediction can guide vehicular beams rather than relying only on reactive feedback | Keep EKF-based predictive beamforming as a serious non-neural baseline | Communication/tracking evidence is not evidence of secrecy |
+| Deep-learning ISAC prediction, W4 | Historical channel information can feed learned predictive beamforming with communication and sensing objectives | Compare learned temporal policies against tracking plus optimization | Performance under its simulation model does not establish generalization or adversarial robustness |
+| Sensing-assisted security, W5 | Estimating possible eavesdropper directions informs secrecy/sensing optimization and artificial-noise design | Represent uncertain unwanted-receiver regions in the beam problem | An estimated reflector direction does not authenticate a device or identify malicious intent |
+| Secure learned prediction, W2 | The indexed description proposes a Transformer-based ISACformer using historical CSI for secure predictive beamforming with a sensing/secrecy trade-off | Temporal attention is a candidate architecture, not a mandatory choice | Reported numerical studies are not evidence of an operational secure radio or MLOps pipeline |
+| Topic-specific perspective, W1 | The indexed title directly addresses AI-driven predictive beamforming for secure vehicular ISAC | Useful follow-up reading for this combined research direction | Full text and complete metadata were not verified here; do not infer its precise method or gains |
+| Measured multimodal data, W6 | DeepSense 6G provides real-world sensing/communication data for learning tasks including beam prediction | Use suitable measured scenarios for front-end prediction validation | Beam labels alone do not provide eavesdropper CSI, interception outcomes, or secrecy labels |
+| Lifecycle guidance, W7-W8 | ML delivery needs data/model validation and lifecycle risk management | Add lineage, approval gates, monitoring, and rollback | Generic guidance must be adapted and measured for RF deadlines and security assumptions |
+
+The meaningful transformation is from **reactive link optimization** to
+**predictive, risk-aware spatial resource control**. A controller can anticipate
+beam misalignment, blockage, and uncertainty growth; allocate measurement
+effort where it reduces security uncertainty; and select data beams,
+sensing probes, and artificial-noise power jointly. These are hypotheses
+to test against equally informed classical methods, not automatic AI gains.
+
+### 18.3 Threat model and requirements before model selection
+
+**Proposed initial case:** an authorized roadside unit serves moving vehicles
+while sensing road objects. Some objects may host passive receivers. Begin
+with a calibrated single-site radio and separate sensing reception or
+scheduled sensing; add cooperative sites only after local behavior is sound.
+
+| Threat or uncertainty | Explicit assumption to record | Required response or limitation |
+| --- | --- | --- |
+| Passive communication interception | Locations/regions, antenna count, noise figure, decoding knowledge, and whether receivers cooperate | Evaluate plausible capability bounds; a silent receiver need not reveal its CSI |
+| Unknown receiver outside detected tracks | Surveillance field of view, detection probability, occlusion, RCS assumptions | Treat undetected receivers as residual risk; a clean track list is not proof of no interceptor |
+| Legitimate-user/interceptor overlap | Angular/range separation and multipath correlation | Test spatial inseparability; narrow beams cannot guarantee isolation between colocated channels |
+| Active spoofing or pilot contamination | Which pilots/reports are authenticated and what an attacker can inject | Authenticate signaling where supported, cross-check sensor consistency, and invalidate corrupted state |
+| Sensing-information leakage | Whether the protected asset is payload, target state, or both | Define separate adversarial inference metrics; payload secrecy rate does not measure sensing privacy |
+| Compromised sensor, model, or coordination peer | Trust boundary, update permissions, provenance, and node failures | Authenticate artifacts/messages, restrict write authority, and retain a local bounded controller |
+| Multi-antenna or colluding interceptors | Receiver combining and information-sharing model | Use an appropriate matrix/colluding model; single-antenna SINR formulas below are insufficient |
+
+Do not label every sensed vehicle an eavesdropper. Maintain a distinct
+**potential interception region** for conservative RF design, separate from
+identity or intent classification. Handle location and camera information
+under purpose limitation, access controls, and retention policies.
+
+Define a service contract before training: required legitimate-user goodput
+and BLER; sensing detection probability at a stated false-alarm rate;
+tracking error and revisit interval; secrecy target under a named receiver
+model; allowed secrecy-outage probability; power/emissions limits; deadline;
+and behavior when the contract is infeasible. A secrecy rate is an
+information-theoretic metric under a channel/coding model, not a direct
+measurement that an encrypted application was or was not compromised.
+
+### 18.4 Proposed end-to-end secure predictive architecture
+
+```mermaid
+flowchart LR
+    RF["Calibrated RF observations and pilots"]
+    FUS["Time-aligned tracks, CSI and uncertainty"]
+    PRED["Activation-time channel and occupancy prediction"]
+    RISK["Receiver regions and threat assumptions"]
+    OPT["Joint data, sensing and artificial-noise candidate"]
+    GATE["Independent feasibility and deadline gate"]
+    TX["Scheduled RF activation"]
+    SAFE["Approved fallback or confidential-payload hold"]
+    LOG["Versioned telemetry and delayed evaluation"]
+    RF --> FUS --> PRED --> OPT
+    RISK --> OPT
+    OPT --> GATE
+    GATE -->|accepted| TX
+    GATE -->|rejected| SAFE
+    TX --> RF
+    TX --> LOG
+    SAFE --> LOG
+```
+
+**Figure D12 - Proposed secure predictive loop.** AI predicts or proposes;
+an independent bounded controller retains activation authority.
+Sensing can improve the next beam decision, but initialization still requires
+an acquisition strategy that does not assume an already aligned beam.
+
+Extend the records in sections 4 and 9 with the following fields:
+
+| Record | Minimum content |
+| --- | --- |
+| Observation | Measurement and arrival timestamps, coordinate frame, clock uncertainty, source ID, calibration version, missing-data mask |
+| Belief state | User CSI estimate/error model, object tracks/covariances, association confidence, occluded regions, observation age |
+| Forecast | Intended activation time, horizon, predicted channel/occupancy distribution, calibrated uncertainty, validity interval |
+| Candidate | Digital/RF weights, data/probe/AN covariance or factor, resource mask, predicted constraints, policy/model version |
+| Decision receipt | Gate result/reason, implemented quantized weights, actual activation time, fallback state, configuration and artifact hashes |
+
+Prediction horizon is the time from the observation timestamp to **RF
+activation**, not just neural inference time. Budget acquisition, transport,
+fusion, inference, solver/projection, scheduling, and RF switching, including
+queueing tails. For illustration only, a 30 m/s vehicle moves 0.30 m over
+10 ms. At 20 m broadside range this corresponds to approximately 0.86 degrees
+of angular change; actual channel coherence also depends on wavelength,
+scatterers, and geometry. This example motivates timing measurements, not
+a universal acceptable horizon.
+
+### 18.5 Security-aware signal model and constrained objective
+
+For one narrowband resource, consider the simplified effective transmit model:
+
+```text
+x = sum_k w_k s_k + p + a
+E[|s_k|^2] = 1
+E[p p^H] = Q_p,  E[a a^H] = Q_a
+Q_x = sum_k w_k w_k^H + Q_p + Q_a
+Q_p >= 0, Q_a >= 0  (positive semidefinite)
+trace(Q_x) <= P_total
+```
+
+Here `w_k` includes data power, `p` is a zero-mean sensing probe, and `a` is
+artificial noise (AN). Streams/probe/noise are uncorrelated in this simplified
+model. Deterministic known probes require the corresponding time-averaged
+model. In a hybrid implementation, effective beams and covariance factors
+must share a realizable RF precoder; arbitrary digital covariances may not
+be implementable with the available RF chains. Extend per subcarrier and
+symbol for the actual wideband resource grid.
+
+For a single-antenna user with channel `h_k`, when neither probe nor AN is
+cancelled, a reference SINR is:
+
+```text
+gamma_k =
+  |h_k^H w_k|^2 /
+  (sum_{j != k} |h_k^H w_j|^2
+   + h_k^H (Q_p + Q_a) h_k + sigma_k^2)
+
+R_k = log2(1 + gamma_k)
+R_sec,k = [R_k - max_{e in E} R_e,k]^+
+[z]^+ = max(z, 0)
+```
+
+`R_e,k` must use the declared interceptor receiver model, not automatically
+the legitimate-user denominator. For conservative testing, let an interceptor
+cancel known probes and decodable other-user streams; do not count public
+pilot/probe sequences as secret jamming. If it can also estimate/cancel AN,
+test that residual-interference assumption explicitly. Multi-antenna receivers
+require combining or information-rate expressions, not this scalar shortcut.
+
+**Proposed robust design:** maximize worst-user modeled secrecy rate or
+legitimate goodput subject to a specified secrecy target, while enforcing
+communication, sensing, hardware, and timing constraints. Use bounded
+channel/position uncertainty or a calibrated probabilistic formulation:
+
+```text
+Pr[R_sec,k(t_activate) < R_required,k | available history] <= epsilon_k
+
+subject also to:
+  user/control service requirements
+  sensing detection/tracking/revisit requirements
+  total, per-antenna, peak, EIRP and spectral limits
+  realizable RF connectivity, phase bits, RF-chain rank and resources
+  observation age, calibration validity and activation deadline
+```
+
+The conditional probability requires a justified uncertainty model; a neural
+confidence score is not a secrecy-outage guarantee. State bounded-set coverage
+or distribution assumptions and test their violations separately. With no
+credible interceptor bound, report **security unassessed**, not zero outage.
+Finite scenario checks also do not prove a continuous-region worst-case bound
+without an appropriate certificate or conservative construction.
+
+AN can hinder interception but consumes power and may harm users and sensing.
+Perfect user-channel null-space AN requires sufficiently accurate CSI and
+spatial degrees of freedom; hybrid constraints and channel aging spoil ideal
+nulls. Known transmitted AN may contribute sensing illumination if its
+realization is retained by the authorized sensing receiver and the estimator
+models it; secrecy and sensing utility still need separate evaluation.
+Do not assume more AN is always better.
+
+Use robust SCA/SDR or suitable constrained optimization as an offline
+reference, with the qualifications in section 10.2. A learned model may
+warm-start the solver or rank feasible codebook candidates. Re-evaluate the
+implemented, quantized action, not merely the neural output. A learned
+predictor and its gate can share model error: hard hardware checks are
+stronger than model-dependent secrecy checks, which need independent stress
+tests and explicit residual-risk reporting.
+
+### 18.6 Where AI adds value, with comparable baselines
+
+| AI task | Candidate method and output | Required comparison and main risk |
+| --- | --- | --- |
+| Motion/channel prediction | Temporal CNN, GRU/LSTM, or Transformer; multi-horizon state/channel distribution | EKF/UKF, constant-velocity, autoregressive, and stale-CSI baselines; abrupt maneuvers and multipath changes |
+| Multimodal blockage forecasting | Radar/position and optionally camera/LiDAR fusion; blockage probability and missing-modality mask | Radio-only and single-modality baselines; synchronization error, privacy, weather, and occlusion |
+| Fast beam synthesis | Supervised imitation of robust solver, unfolded optimization, or physics-informed training | Same-information solver/codebook baseline; teacher infeasibility and simulation bias |
+| Joint beam/AN/resource policy | Constrained RL or offline RL with an explicit feasibility layer | Model-predictive control and robust optimization; reward exploitation and unsafe out-of-distribution actions |
+| Measurement scheduling | Uncertainty/information-gain-based selection of pilots, dwell, and revisit | Periodic and covariance-triggered acquisition; a useful measurement costs time, power, and payload |
+| Cooperative prediction | Graph-based fusion or bounded multi-agent policies | Centralized and independent local policies; stale peers, backhaul cost, and conflicting decisions |
+
+Prefer the smallest model that improves the required tail metrics on target
+hardware. Attention can capture longer histories but also increases memory,
+data requirements, and inference variability. Direct echo-to-beam learning is
+a possible experiment, not permission to discard timestamps, uncertainty,
+calibration checks, or an interpretable reference estimator.
+
+Train explicit uncertainty outputs or use calibrated ensembles/intervals;
+check empirical coverage by speed, range, horizon, blockage, and sensor
+availability. Separate measurement noise from model uncertainty where useful.
+Out-of-distribution detection can trigger caution, but cannot certify that an
+unflagged input is safe. Inflate uncertainty with age, request measurements,
+or decline confidential transmission when the selected security policy cannot
+be supported. Do not explore unvalidated RL actions on a live radio.
+
+### 18.7 Full-design challenges and engineering responses
+
+| Challenge | Why secure ISAC is difficult | Proposed response | Evidence to collect |
+| --- | --- | --- | --- |
+| Silent or occluded interceptors | Sensing sees scattering, not receiver identity or capability | Region-based threat bounds, periodic search, and explicit unknown-receiver risk | Missed detections versus RCS/occlusion and interception-model sensitivity |
+| User/interceptor spatial overlap | The same channel direction can receive both useful and leaked energy | Range focusing only where aperture/bandwidth support it; alternate site, resource, or payload hold | Secrecy feasibility versus angular/range/channel correlation, including identical-channel cases |
+| Prediction failure under maneuvers | Turns, blockage, association swaps, and clock errors invalidate history | Multi-horizon uncertainty, association checks, bounded prediction age, reacquisition | Tail beam error, outage-burst length, and recovery time |
+| Sensing-security coupling | Illuminating a suspected region may also illuminate an interceptor; AN distorts estimation | Joint data/probe/AN design using the actual estimator and receiver assumptions | Secrecy-versus-detection/tracking Pareto curves at fixed power |
+| Limited RF hardware | Phase quantization, squint, PA distortion, calibration error, and RF-chain rank weaken nulls | Hardware-aware training plus post-implementation checks across frequency | Full-band leakage, EVM, sidelobes, per-element power, and null sensitivity |
+| Self-interference and dynamic range | Added probe/AN energy can saturate sensing reception | Isolation/cancellation or scheduled sensing, with analog headroom checks | ADC clipping, residual leakage, and detection under actual transmit loading |
+| Unobservable secrecy labels | Passive interception success normally cannot be read from production telemetry | Controlled receiver tests and uncertainty-bounded offline evaluation | Separate measured user metrics, controlled interceptor metrics, and model-only estimates |
+| Distribution shift and poisoned inputs | New roads/weather/devices or manipulated reports change the feature distribution | Provenance, sensor cross-checks, quarantine, held-out sites, and controlled retraining | Shifted-domain coverage, false alarms, and service impact |
+| Compute/energy pressure | Solver, model, transport, and sensing compete with the PHY budget | Candidate pruning, bounded solver iterations, quantization after validation | End-to-end p99 latency/deadline misses, memory, and total DC energy |
+| Cooperative instability | Delayed peer beliefs and simultaneous AN changes invalidate local assumptions | Expiring messages, local fallback, and a single authority per RF resource | Packet-loss/delay sweeps and per-user/node constraints |
+| Sensing privacy | Better sensing may expose trajectories even if payload is encrypted | Data minimization, authorized purposes, retention limits, and separate sensing-privacy analysis | Access/retention audit and inference tests against protected attributes |
+| Conflicting objectives | A weighted reward can hide one user's outage or a sensing blind spot | Explicit service/security constraints and a documented infeasibility policy | Per-user feasibility, violations, and rejection reasons, not just average reward |
+
+If spatial discrimination is impossible, changing neural architectures cannot
+create missing physical degrees of freedom. Changing the site/resource,
+reducing confidential service, or withholding that payload can be more honest
+than displaying a high predicted secrecy score.
+
+### 18.8 Proposed runtime agent workflow
+
+Here **agent** means a bounded software role, not necessarily an LLM or an
+independently learning radio. Start with one process and typed interfaces;
+split roles across nodes only when necessary. The PHY deadline path should
+contain deterministic DSP, bounded numerical inference, and an explicit
+controller, not open-ended language-model reasoning.
+
+| Role | Input and output | Authority boundary |
+| --- | --- | --- |
+| Observation/fusion agent | Authenticated observations to time-aligned CSI/tracks with uncertainty | Cannot turn a reflector into an authenticated identity |
+| Prediction agent | History and activation time to forecasts/validity intervals | Cannot activate weights or lower policy limits |
+| Security-policy agent | Approved threat/service contract to receiver regions and security constraints | Cannot invent unseen CSI or treat missing data as a safe environment |
+| Beam-planning agent | Forecasts and constraints to candidate beams, probes, AN, and feasibility status | Cannot bypass hardware limits or approve its own release |
+| Independent gate/arbiter | Candidate and current state to activation receipt or rejection | Sole RF commit authority; enforces resource ownership, age, power, and policy checks |
+| Monitor/recovery agent | Implemented action and telemetry to alarms, measurement requests, and approved rollback | Cannot silently change the threat model or deploy a new unapproved model |
+
+**Per-decision sequence:**
+
+1. Validate source, timestamp, calibration, coordinate frame, and observation
+   completeness; flag association ambiguity and unknown regions.
+2. Predict legitimate links and potential interception regions for the planned
+   activation time, including uncertainty propagation.
+3. Generate bounded candidates under the approved threat and service contract;
+   preserve a feasible baseline where one exists.
+4. Quantize/factor weights for the actual hardware and re-evaluate constraints,
+   state validity, resource ownership, and the remaining time budget.
+5. Commit through the scheduler only if accepted. Otherwise log the cause and
+   invoke the contract's approved response: remeasure, change resource/site,
+   reduce confidential service, or hold the confidential payload.
+6. Log implemented actions and outcomes. Compare delayed user/sensing
+   observations with predictions without assuming interceptor outcomes are
+   observable.
+
+The operational state machine is `acquire -> predict -> propose -> validate
+-> activate -> observe`. Any stale, invalid, infeasible, or late decision
+transitions to `degraded/remeasure`; recovery requires fresh valid state.
+A wide control beam may preserve access but **is not automatically a secure
+payload fallback**. Continue only the control traffic authorized by policy;
+never relabel unavailable confidentiality as successful service.
+
+For cooperative sites, use signed/authenticated, sequenced messages containing
+node ID, timestamp, uncertainty, calibration/model versions, and expiry.
+Specify an arbiter for shared resources and reject stale conflicts. Passing
+tracks does not enable coherent joint transmission without the synchronization
+and calibration requirements of section 10.4.
+
+### 18.9 Proposed research and engineering agent workflow
+
+An agent-assisted engineering workflow is separate from the runtime radio
+workflow above. It can automate bounded artifact production, not security
+approval. This is a proposed process, **not an automation installed by this
+documentation update**.
+
+```mermaid
+flowchart LR
+    RES["Research: source-linked evidence ledger"]
+    SPEC["Design: approved threat model and experiment contract"]
+    DATA["Data: versioned scenarios, licenses and splits"]
+    BUILD["Modeling: baseline and candidate training"]
+    EVAL["Evaluation: independent replay and hardware gates"]
+    REVIEW["Human RF, security and operations approval"]
+    REL["Signed release bundle and staged rollout"]
+    MON["Monitoring: drift and incident evidence"]
+    RES --> SPEC --> DATA --> BUILD --> EVAL --> REVIEW --> REL --> MON
+    MON --> DATA
+    EVAL -->|failed gate| BUILD
+```
+
+**Figure D13 - Proposed artifact-driven agent workflow.** Each stage produces
+a reviewable artifact; monitored drift can request a new experiment but
+cannot bypass release approval.
+
+| Engineering role | Required artifact | Stop/escalation condition |
+| --- | --- | --- |
+| Research curator | Source URL, identifier/version, evidence type, assumptions, and verified/unverified claims | Missing full text or inconsistent metadata stays explicitly unresolved |
+| Scenario/data steward | Dataset manifest, licenses, privacy review, scenario parameters, and immutable split IDs | Missing permissions, ground truth, provenance, or train/test contamination |
+| Modeling agent | Baseline/candidate code, configuration, seeds, training logs, and model card | Infeasible teacher outputs, invalid units, unstable learning, or resource overrun |
+| Evaluation agent | Held-out metrics, confidence intervals, threat-model stress results, and reproducible failures | Any release-gate violation or unsupported security claim |
+| Release coordinator | Signed bundle, compatibility checks, approval receipt, rollout and rollback instructions | Unapproved artifact, incompatible radio configuration, or missing rollback path |
+
+Keep evaluation cases and protected datasets outside the modeling agent's
+write authority. Treat retrieved papers, logs, and generated suggestions as
+untrusted inputs; they do not carry permission to change deployment policy.
+An LLM can summarize cited evidence or draft configurations for review, but
+must not issue arbitrary RF commands, access unnecessary credentials, or
+authorize its own generated model.
+
+### 18.10 Proposed MLOps lifecycle for a security-sensitive radio
+
+W7 supplies general CI/CD/continuous-training concepts; W8 supplies voluntary
+AI risk-management structure. The RF-specific controls below are proposals,
+not capabilities established by those references.
+
+| Lifecycle stage | Required artifacts and controls | Promotion/operational gate |
+| --- | --- | --- |
+| Govern and specify | Named owners, threat/service contract, intended use, prohibited conditions, incident and privacy policy | RF, security, and operations approval of assumptions and failure behavior |
+| Collect and version | Dataset/scene manifest, sensor clocks/frames, array/calibration, provenance, license/retention, labels and uncertainty | Schema, units, timing, missingness, permissions, and quality checks |
+| Split and build features | Trajectory/session/site/time-separated partitions; training-only normalization and causal feature pipeline | No future samples in runtime features; no overlapping track windows across splits |
+| Train and track | Code/environment/configuration hashes, seeds, channel/receiver model versions, solver settings, model/optimizer checkpoints | Baseline parity, reproducibility, constraint-aware objective, and resource bounds |
+| Validate and calibrate | Held-out sites/routes/devices, uncertainty calibration, threat sweeps, missing sensors and hardware impairments | Predeclared per-user service, security-model, sensing, and timing gates |
+| Package and register | Signed model, feature schema, normalization, calibration compatibility, runtime, configuration, model card and fallback | Artifact authenticity, dependency review, compatibility, and target-device tests |
+| Deploy cautiously | Offline replay, hardware-in-the-loop, non-transmitting shadow inference, then authorized limited rollout | Human approval; canary cohort meets service gates and has a verified rollback path |
+| Monitor and recover | Input drift, residuals, confidence coverage where labels exist, gate rejections, latency, RF and service health | Alarm routes to approved degradation/rollback; unsupported conditions block confidential service as specified |
+| Retrain and retire | Curated reviewed incident data, new immutable dataset/model versions, repeated gates, retention/deletion record | Drift may trigger training, never unconditional redeployment; revoke incompatible or superseded bundles |
+
+**Radio-specific lineage matters.** A model trained for one array orientation,
+codebook, carrier, bandwidth, RF-chain topology, calibration, or AN receiver
+assumption is not automatically compatible with another. Bind those parameters
+to the release manifest. Validate quantized/exported inference against the
+training implementation and repeat the end-to-end timing and RF checks.
+
+Keep online/offline features consistent: same scaling, antenna ordering,
+complex-number representation, missingness encoding, units, and timestamp
+definition. Replay using only information available at each decision time.
+Training loss and offline beam top-1 accuracy are diagnostic, not release
+criteria for confidential service.
+
+**Monitoring without fictitious labels:** production can measure authorized
+user BLER/goodput, timing, sensing consistency, and constraint-gate activity.
+It generally cannot measure passive interception success. Label a telemetry
+secrecy estimate as model-derived, attach its assumptions and uncertainty,
+and distinguish it from controlled-test receiver measurements. Drift in
+observable channels may justify reevaluation; absence of drift does not prove
+the absence of an interceptor.
+
+Retain the last approved model only while its hardware, environment, and threat
+assumptions remain valid. If not, use an independently validated controller
+within its own assumptions or enter the approved restricted-service state.
+Rollback is not permission to transmit sensitive traffic under unknown risk.
+
+### 18.11 Evaluation protocol: demonstrate security, not just beam accuracy
+
+Use the common parameter ledger in section 12, extended with interceptor
+capabilities, threat-region coverage, receiver cancellation/combining,
+AN realization/knowledge, uncertainty calibration, prediction horizons, and
+the actual coded payload scheme. Specify whether the outcome is a theoretical
+rate, a simulated decoder result, or a controlled RF measurement.
+
+**Baseline ladder under matched resources and information:**
+
+1. Reactive codebook beamforming with measured/stale CSI and no prediction.
+2. EKF/UKF predictive tracking plus the same security-aware beam/AN optimizer.
+3. Robust model-based predictive optimization with identical observations.
+4. Learned prediction plus that optimizer, isolating the predictor's benefit.
+5. Learned end-to-end or RL candidate plus the same independent gate.
+6. Perfect-future-CSI/receiver-location oracle as a clearly non-deployable
+   reference under the selected model, not an assumed attainable baseline.
+
+Run ablations for prediction, extra sensing, AN, uncertainty calibration, and
+the feasibility gate. Disabled-gate experiments belong in offline simulation,
+not live confidential service. Hold total radiated power, bandwidth, aperture,
+RF chains, acquisition resources, and test trajectories comparable. Report
+additional AI/training/inference energy and measurement overhead rather than
+crediting improvements that came only from more resources or future data.
+
+| Metric family | What must be reported |
+| --- | --- |
+| Communication | Per-user coded goodput, BLER, fairness, outage-burst/recovery distributions, control availability, and acquisition overhead |
+| Modeled secrecy | Per-user secrecy-rate CDF, worst-user rate, secrecy-outage probability at declared thresholds, feasibility and unsupported-risk cases |
+| Controlled interception | Decoder success/BLER or information leakage under explicitly configured receivers and codes; do not infer information-theoretic secrecy from high interceptor BLER alone |
+| Sensing | Detection probability at specified false-alarm rate, range/angle/velocity RMSE, track loss, revisit gaps, and covariance coverage |
+| Prediction | Horizon-dependent channel/beam error, blockage calibration, uncertainty coverage, and performance under missing modalities |
+| Hardware and operations | Quantized full-band leakage/nulls, EVM, power/emissions, p50/p95/p99 end-to-end latency, deadline misses, fallback/rejection rates, and DC energy |
+| Sensing privacy, if in scope | Authorized task utility versus an explicitly defined adversary's target-state inference performance |
+
+Stress unseen roads/sites/weather/speeds, sharp turns, crossovers/track swaps,
+blockage, stationary weak-RCS objects, sensor dropout, clock skew, incorrect
+CSI, collusion/multiple receive antennas, same-direction receivers, AN
+cancellation, model aging, backhaul loss, and corrupted-input scenarios.
+Include infeasible scenes rather than removing them from performance averages.
+
+Use independent scenario/training seeds and trajectory-level confidence
+intervals; overlapping snapshots are not independent trials. For rare outages,
+declare exposure and sampling assumptions. Under independent Bernoulli trials,
+zero observed events gives an approximate 95% upper bound of `3/N`, not proof
+of zero risk; correlated mobility requires an appropriate effective sample
+or block-based analysis. Never select thresholds after viewing test results.
+
+**Illustrative gate template, not a universal 6G specification:** service
+owners populate `R_required,k`, `epsilon_k`, required goodput/BLER,
+`P_D_min` at `P_FA_target`, tracking-error limits, activation-age/deadline
+limits, and permitted fallback exposure before experiments. Pass only if
+the declared confidence bounds and hardware constraints meet the contract.
+An optimizer rejection is a reported availability cost, not a secret-rate
+success; report both secrecy conditional on transmission and confidential
+service availability to prevent a transmit-nothing policy from appearing best.
+
+### 18.12 Implementation roadmap and decision gates
+
+| Phase | Deliverable | Exit condition |
+| --- | --- | --- |
+| A: Threat and physics baseline | Approved contract; calibrated communication/sensing model; explicit interceptor receiver model | Known geometry/power/timing tests pass; physically inseparable cases are correctly infeasible |
+| B: Classical secure prediction | EKF/UKF plus robust beam/probe/AN optimizer and controlled receiver simulation | Matched-resource baselines, constraint residuals, uncertainty assumptions, and fallback behavior documented |
+| C: Bounded AI assistance | Causal learned predictor or solver warm start, calibrated uncertainty, versioned data/model artifacts | Held-out gains over B in the specified metrics without violating service/security-model gates |
+| D: Radio realization | Exported model, actual hybrid/quantized beams, target-device inference, RF replay/HIL | Implemented-action, sensing, power, and tail-latency gates met; rollback/restricted service exercised |
+| E: Authorized field validation | Limited shadow/canary plan, controlled interceptor equipment, operational monitoring | Approved assumptions supported by field evidence; unobservable security claims remain qualified |
+| F: Cooperative extension | Expiring inter-node state and bounded arbitration | Gains persist with synchronization errors, backhaul delay/loss, and per-node/user constraints |
+
+The most defensible first prototype is **prediction plus constrained
+optimization**, not an unconstrained multi-agent policy. It separates the
+value of sensing, prediction, and beam/AN design, while giving MLOps concrete
+artifacts and explicit failure states. Add end-to-end learning or multi-agent
+coordination only after measured evidence justifies the extra complexity.
+
+### 18.13 Web-source register and attribution
+
+These are external reading sources, not new repository PDFs. Dates below are
+publication/preprint years where supported by the available indexed record.
+Web discovery date: **13 November 2026**. Link inclusion does not imply full
+text was accessible, results were reproduced, or later versions were checked.
+
+| ID | Source and persistent link | Use and verification boundary |
+| --- | --- | --- |
+| W1 | [*AI-Driven Predictive Beamforming for Secure ISAC in 6G Vehicular Networks*, IEEE indexed record 11717704](https://ieeexplore.ieee.org/abstract/document/11717704); [institutional accepted-manuscript link surfaced in search](https://pure.hud.ac.uk/files/144967878/IEEE_COMMAG_Accepted_Version.pdf) | Exact-topic discovery pointer; title/link surfaced in indexed results. Complete author list, DOI, date, method, and full text were not independently verified here |
+| W2 | [*Deep Learning-Empowered Secure Predictive Beamforming Design for Integrated Sensing and Communications Systems*, IEEE TWC, 2025](https://doi.org/10.1109/TWC.2025.3567799); [IEEE record 11004476](https://ieeexplore.ieee.org/abstract/document/11004476) | Indexed publication description supports the ISACformer and secrecy/sensing summary; no numerical claim or full-text reproduction adopted |
+| W3 | Fan Liu, Weijie Yuan, Christos Masouros, and Jinhong Yuan, [*Radar-Assisted Predictive Beamforming for Vehicular Links: Communication Served by Sensing*, 2020](https://arxiv.org/abs/2001.09306) | Classical sensing-assisted prediction baseline; not a secure-ISAC deployment demonstration |
+| W4 | [*Predictive Beamforming for Integrated Sensing and Communication in Vehicular Networks: A Deep Learning Approach*, 2022 preprint](https://arxiv.org/abs/2202.03811) | Indexed description of historical-channel deep prediction with communication/sensing objectives; no direct secrecy guarantee |
+| W5 | Nanchi Su, Fan Liu, and Christos Masouros, [*Sensing-Assisted Eavesdropper Estimation: An ISAC Breakthrough in Physical Layer Security*, 2022 preprint](https://arxiv.org/abs/2210.08286) | Sensing-assisted possible-interceptor estimation, AN, and secrecy/estimation trade-off; no assumption that all passive receivers can be detected |
+| W6 | [*DeepSense 6G: A Large-Scale Real-World Multi-Modal Sensing and Communication Dataset*, 2022 preprint](https://arxiv.org/abs/2211.09769) | Measured-data entry point; check the chosen scenario's sensors, synchronization, labels, license, and splits before use; no assumed secrecy ground truth |
+| W7 | Google Cloud, [*MLOps: Continuous delivery and automation pipelines in machine learning*](https://docs.cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) | Official general ML-delivery guidance; cited as lifecycle background, not endorsement of a cloud dependency or real-time RF architecture |
+| W8 | NIST, [*Artificial Intelligence Risk Management Framework (AI RMF 1.0)*, 2023](https://doi.org/10.6028/NIST.AI.100-1); [official framework page](https://www.nist.gov/itl/ai-risk-management-framework) | Govern, Map, Measure, and Manage lifecycle structure; voluntary framework, not a radio-security certification |
+
+All descriptions are paraphrased summaries or explicitly labeled design
+proposals. Source authors retain their rights; no paper text, original figure,
+or experimental curve is reproduced. Before publication-quality comparison,
+obtain the original versions, confirm bibliographic metadata, audit the
+equations and assumptions, and reproduce the relevant experiments.
