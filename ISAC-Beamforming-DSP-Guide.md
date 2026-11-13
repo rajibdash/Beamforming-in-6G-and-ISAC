@@ -585,7 +585,7 @@ Scheduler: users, resources, MCS, layers, beam state, sensing reservation
                                 |
 PDSCH: TB/CRC -> LDPC -> rate matching -> scrambling -> modulation/layers
 PDCCH: DCI/CRC -> polar coding -> rate matching -> scrambling/modulation
-SSB/PBCH and UL channels: their own specified processing
+SSB/PBCH and UL channels(PUCCH, PUSCH): their own specified processing
 Reference generation: DM-RS, CSI-RS, SRS, PT-RS as applicable
                                 |
 Resource mapping -> digital precoder -> per-chain IFFT/CP
