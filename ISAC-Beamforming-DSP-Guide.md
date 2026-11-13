@@ -952,15 +952,15 @@ state age, confidence, RF feasibility, and calibration status as well.
 
 ```mermaid
 flowchart LR
-    SIM["Offline simulator and randomized scenarios"]
+    SIM["Offline simulator\nand randomized\nscenarios"]
     BUF["Replay buffer"]
-    TRAIN["Actor/critic and target-network training"]
-    VAL["Held-out validation and constraint audit"]
-    POLICY["Versioned inference policy"]
-    STATE["Measured state and uncertainty"]
-    CHECK["Feasibility, confidence and deadline gate"]
-    APPLY["Scheduled beam/resource activation"]
-    FALL["Validated baseline or remeasurement"]
+    TRAIN["Actor/critic\nand target-network\ntraining"]
+    VAL["Held-out validation\nand constraint audit"]
+    POLICY["Versioned\ninference policy"]
+    STATE["Measured state\nand uncertainty"]
+    CHECK["Feasibility,\nconfidence\nand deadline gate"]
+    APPLY["Scheduled beam/resource\nactivation"]
+    FALL["Validated baseline\nor remeasurement"]
     SIM --> BUF --> TRAIN --> VAL --> POLICY
     STATE --> POLICY
     POLICY --> CHECK
@@ -1050,15 +1050,15 @@ the stated experiments are completed.
 
 ```mermaid
 flowchart LR
-    P0["0: requirements and audit"] --> P1["1: communication baseline"]
+    P0["0: requirements\nand audit"] --> P1["1: communication\nbaseline"]
     P0 --> P2["2: sensing baseline"]
-    P1 --> P3["3: orthogonal integration"]
+    P1 --> P3["3: orthogonal\nintegration"]
     P2 --> P3
-    P3 --> P4["4: joint digital design"]
-    P4 --> P5["5: hardware constraints"]
+    P3 --> P4["4: joint digital\ndesign"]
+    P4 --> P5["5: hardware\nconstraints"]
     P5 --> P6["6: gated AI"]
     P5 --> P7["7: distributed/multi-radio"]
-    P6 --> P8["8: hardware pilot"]
+    P6 --> P8["8: hardware\npilot"]
     P7 --> P8
 ```
 
@@ -1514,15 +1514,15 @@ measurement that an encrypted application was or was not compromised.
 
 ```mermaid
 flowchart LR
-    RF["Calibrated RF observations and pilots"]
-    FUS["Time-aligned tracks, CSI and uncertainty"]
-    PRED["Activation-time channel and occupancy prediction"]
-    RISK["Receiver regions and threat assumptions"]
-    OPT["Joint data, sensing and artificial-noise candidate"]
-    GATE["Independent feasibility and deadline gate"]
-    TX["Scheduled RF activation"]
-    SAFE["Approved fallback or confidential-payload hold"]
-    LOG["Versioned telemetry and delayed evaluation"]
+    RF["Calibrated RF\nobservations\nand pilots"]
+    FUS["Time-aligned tracks,\nCSI and\nuncertainty"]
+    PRED["Activation-time\nchannel and\noccupancy prediction"]
+    RISK["Receiver regions\nand threat\nassumptions"]
+    OPT["Joint data,\nsensing and\nartificial-noise candidate"]
+    GATE["Independent\nfeasibility and\ndeadline gate"]
+    TX["Scheduled RF\nactivation"]
+    SAFE["Approved fallback\nor confidential-payload\nhold"]
+    LOG["Versioned telemetry\nand delayed\nevaluation"]
     RF --> FUS --> PRED --> OPT
     RISK --> OPT
     OPT --> GATE
@@ -1741,14 +1741,14 @@ documentation update**.
 
 ```mermaid
 flowchart LR
-    RES["Research: source-linked evidence ledger"]
-    SPEC["Design: approved threat model and experiment contract"]
-    DATA["Data: versioned scenarios, licenses and splits"]
-    BUILD["Modeling: baseline and candidate training"]
-    EVAL["Evaluation: independent replay and hardware gates"]
-    REVIEW["Human RF, security and operations approval"]
-    REL["Signed release bundle and staged rollout"]
-    MON["Monitoring: drift and incident evidence"]
+    RES["Research:\nsource-linked\nevidence ledger"]
+    SPEC["Design:\napproved threat\nmodel and\nexperiment contract"]
+    DATA["Data:\nversioned scenarios,\nlicenses and splits"]
+    BUILD["Modeling:\nbaseline and\ncandidate training"]
+    EVAL["Evaluation:\nindependent replay\nand hardware gates"]
+    REVIEW["Human RF,\nsecurity and\noperations approval"]
+    REL["Signed release\nbundle and\nstaged rollout"]
+    MON["Monitoring:\ndrift and\nincident\nevidence"]
     RES --> SPEC --> DATA --> BUILD --> EVAL --> REVIEW --> REL --> MON
     MON --> DATA
     EVAL -->|failed gate| BUILD
